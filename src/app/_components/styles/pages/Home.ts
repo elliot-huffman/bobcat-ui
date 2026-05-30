@@ -140,5 +140,99 @@ export const useStyleList = makeStyles({
         'fontWeight': tokens.fontWeightSemibold,
         'lineHeight': tokens.lineHeightHero700,
         'marginTop': tokens.spacingVerticalS
+    },
+    'wizardActions': {
+        'alignItems': 'center',
+        'columnGap': tokens.spacingHorizontalS,
+        'display': 'flex',
+        'flexWrap': 'wrap',
+        'marginTop': tokens.spacingVerticalL
+    },
+    'wizardLayout': {
+        'alignItems': 'flex-start',
+        'columnGap': tokens.spacingHorizontalL,
+        'display': 'flex',
+        'flexWrap': 'wrap',
+        'rowGap': tokens.spacingVerticalL,
+        'width': '100%'
+    },
+    'wizardLeftRail': {
+        'display': 'flex',
+        'flexBasis': '300px',
+        'flexDirection': 'column',
+        'flexGrow': 0,
+        'flexShrink': 0,
+        'minWidth': '260px',
+        'rowGap': tokens.spacingVerticalM
+    },
+    'wizardRightPanel': {
+        'display': 'flex',
+        'flexBasis': '0%',
+        'flexDirection': 'column',
+        'flexGrow': 1,
+        'minWidth': '0'
+    },
+    'wizardShell': {
+        'backgroundColor': tokens.colorNeutralBackground1,
+        ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+        'boxShadow': tokens.shadow4,
+        ...shorthands.padding(tokens.spacingVerticalXL, tokens.spacingHorizontalXL),
+        'width': '100%'
+    },
+    'wizardStepButton': {
+        'alignItems': 'flex-start',
+        'backgroundColor': tokens.colorNeutralBackground2,
+        ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+        'borderRadius': tokens.borderRadiusLarge,
+        'cursor': 'pointer',
+        'display': 'flex',
+        'flexBasis': 'auto',
+        'flexDirection': 'column',
+        'flexGrow': 0,
+        'gap': tokens.spacingVerticalXXS,
+        'minHeight': '120px',
+        'textAlign': 'left',
+        'transitionDuration': tokens.durationNormal,
+        'transitionProperty': 'transform, border-color, box-shadow, background-color',
+        'transitionTimingFunction': tokens.curveEasyEase,
+        'width': '100%',
+        ...shorthands.padding(tokens.spacingVerticalL, tokens.spacingHorizontalL),
+        ':hover': {
+            'backgroundColor': tokens.colorNeutralBackground2Hover,
+            'boxShadow': tokens.shadow8,
+            'transform': 'translateY(-2px)'
+        }
+    },
+    'wizardStepButtonActive': {
+        'backgroundColor': tokens.colorBrandBackground2,
+        'boxShadow': tokens.shadow8
+    },
+    'wizardStepButtonComplete': {
+        'backgroundColor': tokens.colorPaletteSeafoamBackground2
+    },
+    'wizardStepDescription': {
+        'color': tokens.colorNeutralForeground2,
+        'fontSize': tokens.fontSizeBase200,
+        'lineHeight': tokens.lineHeightBase200
+    },
+    'wizardStepIndex': {
+        'color': tokens.colorBrandForeground1,
+        'fontSize': tokens.fontSizeBase200,
+        'fontWeight': tokens.fontWeightSemibold,
+        'letterSpacing': '0.08em',
+        'textTransform': 'uppercase'
+    },
+    'wizardStepList': {
+        'display': 'flex',
+        'flexDirection': 'column',
+        'flexWrap': 'nowrap',
+        'rowGap': tokens.spacingVerticalM,
+        'width': '100%'
+    },
+    'wizardStepTitle': {
+        'color': tokens.colorNeutralForeground1,
+        'fontSize': tokens.fontSizeBase500,
+        'fontWeight': tokens.fontWeightSemibold,
+        'lineHeight': tokens.lineHeightBase500
     }
 });
