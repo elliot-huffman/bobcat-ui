@@ -148,6 +148,12 @@ export const useStyleList = makeStyles({
         'flexWrap': 'wrap',
         'marginTop': tokens.spacingVerticalL
     },
+    'wizardAction2': {
+        'alignItems': 'center',
+        'columnGap': tokens.spacingHorizontalS,
+   
+        'marginTop': tokens.spacingVerticalL
+    },
     'wizardLayout': {
         'alignItems': 'flex-start',
         'columnGap': tokens.spacingHorizontalL,

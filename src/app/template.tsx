@@ -36,7 +36,10 @@ export default function Template(props: TemplateProps): React.ReactNode {
         if (topBarRef.current) { calculatedMaxHeight = `calc(100dvh - ${ topBarRef.current.getBoundingClientRect().bottom }px)`; }
 
         // Set the max height of the content container to ensure it doesn't overflow the viewport, accounting for the Top Bar's height.
-        if (contentContainerRef.current) { contentContainerRef.current.style.maxHeight = calculatedMaxHeight; }
+        if (contentContainerRef.current) {
+            contentContainerRef.current.style.height = calculatedMaxHeight;
+            contentContainerRef.current.style.maxHeight = calculatedMaxHeight;
+        }
     }, []);
 
     // Manually inject the max height of the content container to ensure perfect scrolling behavior

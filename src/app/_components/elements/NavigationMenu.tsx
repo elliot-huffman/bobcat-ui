@@ -1,7 +1,6 @@
 'use client';
 
-import { ArrowSync20Regular, BarcodeScanner20Regular, Home20Regular, Info20Regular, PeopleSettings20Regular, Settings20Regular } from '@fluentui/react-icons';
-import { DrawerHeaderTitle, NavDrawer, NavDrawerBody, NavDrawerHeader, NavItem, NavSectionHeader, type OnNavItemSelectData } from '@fluentui/react-components';
+import { Badge, DrawerHeaderTitle, NavDrawer, NavDrawerBody, NavDrawerHeader, NavSectionHeader, type OnNavItemSelectData } from '@fluentui/react-components';
 import { navigationMenuVisibleSelector, setNavigationMenuVisible } from '../../../store/components/elements/navigationMenu';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -116,8 +115,9 @@ export function NavigationMenu(): React.ReactNode {
             </NavDrawerHeader>
             <NavDrawerBody>
                 <NavSectionHeader>General</NavSectionHeader>
-                <NavItem icon={ <Home20Regular /> } value="userInput" className={ compiledStyles.colorFix }>User Input</NavItem>
-                <NavItem icon={ <BarcodeScanner20Regular /> } value="requestOutput" className={ compiledStyles.colorFix }>Request Output</NavItem>
+                <div className={ compiledStyles.comingSoonContainer }>
+                    <Badge appearance="outline" color="informative">Coming soon</Badge>
+                </div>
             </NavDrawerBody>
         </NavDrawer>
     );

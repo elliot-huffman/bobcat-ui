@@ -4,7 +4,7 @@ import { Badge, Button, Card, Input, Label, mergeClasses } from '@fluentui/react
 import { ClipboardRegular } from '@fluentui/react-icons';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Layout } from './_components/elements/LayoutSystem';
+import { Layout, LayoutItem } from './_components/elements/LayoutSystem';
 import { useStyleList } from './_components/styles/pages/Home';
 
 const mockOutput = JSON.stringify({
@@ -184,10 +184,10 @@ function InputStep(props: InputStepProps): React.ReactNode {
                     value={ props.state.secondInput }
                     onChange={ (_, data) => { props.onChange('secondInput', data.value); } }
                 />
-                <Layout className={ props.computedStyles.wizardActions }>
+                <LayoutItem  className={ props.computedStyles.wizardActions }>
                     <Button appearance="secondary" onClick={ props.onBack }>Back</Button>
                     <Button appearance="primary" onClick={ props.onSubmit }>Send Request</Button>
-                </Layout>
+                </LayoutItem>
             </Layout>
         </Card>
     );
