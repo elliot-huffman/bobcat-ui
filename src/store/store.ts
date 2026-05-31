@@ -5,13 +5,17 @@ import { navigationMenuSlice } from './components/elements/navigationMenu';
 import { setupListeners } from '@reduxjs/toolkit/query/react';
 import { themeProviderSlice } from './components/themeProvider';
 import { userDataSlice } from './components/elements/userData';
+import { demoModeSlice } from './components/elements/demoMode';
+import { analysisScreenSlice } from './components/elements/analysisScreen';
 
 /** Global metadata store to be used across all pages in the same browser memory instance. */
 export const store = configureStore({
     'reducer': {
         'navigationMenu': navigationMenuSlice.reducer,
         'themeProvider': themeProviderSlice.reducer,
-        'userData': userDataSlice.reducer
+        'userData': userDataSlice.reducer,
+        'demoMode': demoModeSlice.reducer,
+        'analysisScreen': analysisScreenSlice.reducer
     }
 });
 

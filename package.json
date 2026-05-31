@@ -15,9 +15,6 @@
         "@fluentui/react-icons": "~2.0.326",
         "@reduxjs/toolkit": "~2.11.2",
         "jws": "~4.0.1",
-    "@uiw/react-json-view": "^2.0.0-alpha.42",
-
-    "lucide-react": "^1.14.0",
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -25,18 +22,13 @@
     "typia":"~12.1.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  },
-  "overrides":{
-    "postcss": "8.5.14"
+    "typescript": "~5.9.3"
 
   }
 }
