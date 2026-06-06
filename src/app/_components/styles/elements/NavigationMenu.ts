@@ -4,14 +4,15 @@ import { makeStyles, tokens } from '@fluentui/react-components';
 
 /** List of CSS styles for the navigation menu. */
 export const useStyleList = makeStyles({
-    'comingSoonContainer': {
-        'display': 'flex',
-        'paddingLeft': tokens.spacingHorizontalM,
-        'paddingTop': tokens.spacingVerticalXS
+    'colorFix': {
+        ':hover': { 'backgroundColor': tokens.colorBrandBackground },
+        'backgroundColor': 'initial'
     },
+    'headerIconPadding': { 'paddingLeft': '0.5rem' },
+    'headerPaddingFix': { 'paddingTop': '0.5rem !important' },
     'navContainer': {
         'backgroundColor': tokens.colorNeutralBackground2,
-        'height': '100%',
+        'minHeight': '100vh',
         'minWidth': '17%'
     }
 });
