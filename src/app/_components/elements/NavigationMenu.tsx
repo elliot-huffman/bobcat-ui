@@ -1,158 +1,202 @@
+/* eslint-disable react-hooks/refs */
 'use client';
 
-import { Badge, DrawerHeaderTitle, NavDrawer, NavDrawerBody, NavDrawerHeader, NavItem, NavSectionHeader, type OnNavItemSelectData } from '@fluentui/react-components';
-import { analysisScreenSelector, setAnalysisScreen } from '../../../store/components/elements/analysisScreen';
-import { navigationMenuVisibleSelector, setNavigationMenuVisible } from '../../../store/components/elements/navigationMenu';
-import { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Activity, useMemo } from 'react';
+import { DrawerHeaderTitle, NavCategory, NavCategoryItem, NavDrawer, NavDrawerBody, NavDrawerHeader, NavItem, NavSectionHeader, NavSubItem, NavSubItemGroup, type OnNavItemSelectData } from '@fluentui/react-components';
+import { Layout, LayoutItem } from './LayoutSystem';
+import type { MenuEntry, MenuItem, MenuItemContainer, NavigationMenuUnifiedConfiguration } from '../types/elements/NavigationMenu';
 import { usePathname, useRouter } from 'next/navigation';
 import { useStyleList } from '../styles/elements/NavigationMenu';
 
+/** Props for the NavigationMenu component. */
+interface NavigationMenuProps {
+    /** Configuration for the navigation menu, including the list of items to be rendered. */
+    'menuLayout': NavigationMenuUnifiedConfiguration;
+    /** Flag that controls the visibility of the navigation menu. */
+    'open': boolean;
+    /**
+     * Executed when the navigation menu's open state changes from within the menu itself, such as when the user opens or closes the menu. This function should update the state that controls the 'open' prop to ensure the menu's visibility is in sync with user interactions.
+     * @param newState Updated isOpen flag state that indicates whether the navigation menu should be open or closed after the change.
+     */
+    'setMenuOpenState': (newState: boolean) => void;
+    /** Optional React ref attached to the rendered parent div element. */
+    'ref'?: React.Ref<HTMLDivElement>;
+}
+
 /**
  * Renders the application's navigation drawer with links to shared pages.
+ * @param props Configuration of the navigation menu, including the list of items to be rendered and an optional React ref.
  * @returns Rendered navigation drawer.
  */
-export function NavigationMenu(): React.ReactNode {
-    /** IDs for in-page section anchors. */
-    const inPageSectionIds = useMemo(() => new Set(['home', 'scan-screen', 'detailed-analysis-grid', 'userInput', 'requestOutput', 'check-in', 'add-remove', 'sync']), []);
-
-    /** Redux dispatch used to update menu visibility. */
-    const dispatch = useDispatch();
-
+export function NavigationMenu(props: NavigationMenuProps): React.ReactNode {
     /** Router used to navigate to the selected page. */
     const router = useRouter();
 
     /** Current page path used to determine the selected navigation item. */
     const currentPage = usePathname();
 
-    /** Current analysis screen mode used to map selected nav item on home. */
-    const analysisScreen = useSelector(analysisScreenSelector);
-
     /** Compiled CSS styles for the navigation menu. */
     const compiledStyles = useStyleList();
 
-    /** Current visibility state of the navigation drawer. */
-    const isNavigationMenuVisible = useSelector(navigationMenuVisibleSelector);
+    /**
+     * Removes a trailing slash so routes compare and route consistently.
+     * @param path The path to normalize.
+     * @returns The normalized path without a trailing slash.
+     */
+    function normalizePath(path: string): string { return path.endsWith('/') && path.length > 1 ? path.slice(0, -1) : path; }
 
-    /** Navigates to the About page and closes the navigation drawer. */
-    const navManager = useCallback((_event: unknown, data: OnNavItemSelectData): void => {
-        if (typeof data.value !== 'string') { return; }
+    /** Menu entries normalized into renderable items with generated IDs for selection and keys. */
+    const computedMenu = useMemo(() => {
+        /** Route lookup keyed by the generated value assigned to each rendered nav item. */
+        const destinationById = new Map<string, string>();
 
-        if (data.value === 'add-api') {
-            dispatch(setAnalysisScreen('add-api'));
+        /** Selection lookup keyed by the destination path for each rendered nav item. */
+        const selectedValueByPath = new Map<string, string>();
 
-            if (currentPage !== '/') {
-                router.push('/');
+        /**
+         * Converts menu link data into a normalized leaf entry.
+         * @param item The menu item to normalize.
+         * @returns The normalized menu item.
+         */
+        function normalizeMenuLink(item: Omit<MenuItem, 'id'>): MenuItem {
+            /** Randomly generated UUIDv4 string to use as the unique identifier for the menu item. */
+            const id = crypto.randomUUID();
 
-                return;
-            }
+            /** Normalized destination path for consistent routing. */
+            const destination = normalizePath(item.destination);
 
-            window.history.replaceState(void 0, '', '/');
+            // Populate lookups for routing and selected item determination based on the generated ID and normalized destination path
+            destinationById.set(id, destination);
 
-            return;
+            // If multiple items share the same destination, the last one in the list will be the one that is selected when on that page, which is an acceptable outcome since they all route to the same place anyway.
+            selectedValueByPath.set(destination, id);
+
+            // Return the normalized menu item with the generated ID and normalized destination, along with the original label and optional icon
+            return {
+                ...typeof item.icon === 'undefined' ? {} : { 'icon': item.icon },
+                destination,
+                id,
+                'label': item.label,
+                'type': item.type
+            };
         }
 
-        if (data.value === 'scan-screen') {
-            dispatch(setAnalysisScreen('scan'));
+        /** List of menu items that have been put into the proper format for rendering and navigation. */
+        const computedMenuList: MenuEntry[] = [];
 
-            if (currentPage !== '/') {
-                router.push('/#scan-screen');
+        // Iterate through each item and ensure they are ready for rendering and integration with and consumption by the navigation system.
+        for (const menuItem of props.menuLayout.items) {
+            // Process each menu item based on its type to ensure it is properly prepared for rendering and interaction with the navigation system.
+            switch (menuItem.type) {
+                case 'container': {
+                    // Normalize the container item and all of its children, then add them to the menu item list for rendering. The container itself is not selectable and does not have a destination, but its children are rendered as selectable items that route to their respective destinations.
+                    computedMenuList.push({
+                        'id': crypto.randomUUID(),
+                        'label': menuItem.label,
+                        ...typeof (menuItem as MenuItemContainer).icon === 'undefined' ? {} : { 'icon': (menuItem as MenuItemContainer).icon },
+                        'children': (menuItem as MenuItemContainer).children.map((child) => normalizeMenuLink(child)),
+                        'type': 'container'
+                    } as MenuItemContainer);
 
-                return;
+                    // Stop execution to prevent fall through
+                    break;
+                }
+                case 'divider': {
+                    // Add the divider to the menu item list for rendering
+                    computedMenuList.push({
+                        'id': crypto.randomUUID(),
+                        'label': menuItem.label,
+                        'type': 'divider'
+                    });
+
+                    // Stop execution to prevent fall through
+                    break;
+                }
+                case 'item': {
+                    // Normalize the menu item and add it to the menu item list for rendering
+                    computedMenuList.push(normalizeMenuLink(menuItem as Omit<MenuItem, 'id'>));
+
+                    // Stop execution to prevent fall through
+                    break;
+                }
+                default: // Skip the current item as it is unknown to the system and can't be safely processed
             }
-
-            document.getElementById('scan-screen')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            window.history.replaceState(void 0, '', '/#scan-screen');
-
-            return;
         }
 
-        if (data.value === 'add/remove') {
-            const targetId = 'add-remove';
+        // Memoize the resulting menu items and metadata
+        return {
+            computedMenuList,
+            destinationById,
+            'firstItemId': computedMenuList[0]?.id,
+            'selectedValue': selectedValueByPath.get(normalizePath(currentPage)) ?? ''
+        };
+    }, [currentPage, props.menuLayout.items]);
 
-            if (currentPage !== '/') {
-                router.push(`/#${ targetId }`);
+    /**
+     * Navigates to the selected page when a mapped nav item is clicked.
+     * @param _event Event object for the navigation item selection, not used in the function.
+     * @param data Data object containing the value of the selected navigation item, used to look up the corresponding destination path and navigate to it.
+     */
+    function navigationManager(_event: unknown, data: OnNavItemSelectData): void {
+        /** Path to navigate to for the selected navigation item. */
+        const destination = computedMenu.destinationById.get(data.value);
 
-                return;
-            }
+        // If a destination path exists for the selected navigation item, navigate to that path using the router. If no destination is found, do nothing.
+        if (typeof destination === 'string') { router.push(destination); }
+    }
 
-            document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            window.history.replaceState(void 0, '', `/#${ targetId }`);
-
-            return;
-        }
-
-        if (inPageSectionIds.has(data.value)) {
-            if (currentPage !== '/') {
-                router.push(`/#${ data.value }`);
-
-                return;
-            }
-
-            document.getElementById(data.value)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            window.history.replaceState(void 0, '', `/#${ data.value }`);
-
-            return;
-        }
-
-        // Navigate to the requested page if it exists
-        switch (data.value) {
-            case 'settings':
-                // Execute page navigation
-                router.push('/Settings');
-
-                // Stop execution to prevent fallthrough
-                break;
-            case 'about':
-                // Execute page navigation
-                router.push('/About');
-
-                // Stop execution to prevent fallthrough
-                break;
+    /**
+     * Renders a normalized menu entry into the Fluent drawer structure.
+     * @param item The menu entry to render, which can be a divider, a container with child items, or a leaf item with a destination.
+     * @returns React node representing the rendered menu entry.
+     */
+    function renderNavEntry(item: MenuEntry): React.ReactNode {
+        // Render the correct fluent UI component based on the type of the menu entry
+        switch (item.type) {
+            case 'divider':
+                // Render a section header for dividers, using the label as the header text if it exists
+                return <NavSectionHeader key={ item.id }>{ item.label }</NavSectionHeader>;
+            case 'container':
+                return (
+                    <NavCategory value={ item.id } key={ item.id }>
+                        <NavCategoryItem { ...(typeof item.icon === 'undefined' ? {} : { 'icon': item.icon }) }>{ item.label }</NavCategoryItem>
+                        <NavSubItemGroup>
+                            { item.children.map((menuItem) => <NavSubItem key={ menuItem.id } value={ menuItem.id } { ...(typeof menuItem.icon === 'undefined' ? {} : { 'icon': menuItem.icon }) }>{ menuItem.label }</NavSubItem>) }
+                        </NavSubItemGroup>
+                    </NavCategory>
+                );
+            case 'item':
+                return <NavItem key={ item.id } { ...(typeof item.icon === 'undefined' ? {} : { 'icon': item.icon }) } value={ item.id } className={ compiledStyles.colorFix } >{ item.label }</NavItem>;
             default:
-                // No default navigation page, just close the menu
-
-                // Stop execution to prevent fallthrough
-                break;
+                // Render nothing on an unknown menu item type
+                return null;
         }
-    }, [currentPage, dispatch, inPageSectionIds, router]);
-
-    /** Determines the currently selected navigation item based on the current page. */
-    const selectedNavItem = useMemo(() => {
-        switch (currentPage) {
-            case '/':
-                return analysisScreen === 'add-api' ? 'add-api' : 'scan-screen';
-            case '/Settings':
-            case '/Settings/':
-                return 'settings';
-            case '/About':
-            case '/About/':
-                return 'about';
-            default:
-                return '';
-        }
-    }, [analysisScreen, currentPage]);
+    }
 
     // Render the navigation drawer with the appropriate visibility and event handlers
     return (
         <NavDrawer
-            open={ isNavigationMenuVisible }
+            open={ props.open }
             type="inline"
             className={ compiledStyles.navContainer }
-            onNavItemSelect={ navManager }
-            selectedValue={ selectedNavItem }
-            onOpenChange={ (_event, data): void => { dispatch(setNavigationMenuVisible(data.open)); } }
+            onNavItemSelect={ navigationManager }
+            selectedValue={ computedMenu.selectedValue }
+            onOpenChange={ (_event, data): void => { props.setMenuOpenState(data.open); } }
+            // @ts-expect-error - The NavDrawer component's type definitions are currently inaccurate and do not recognize the ref prop, but it is supported in practice and necessary for proper functionality, so we will ignore the type error for now until the library is updated with correct types.
+            ref={ props.ref }
         >
-            <NavDrawerHeader>
-                <DrawerHeaderTitle>Navigation</DrawerHeaderTitle>
-            </NavDrawerHeader>
-            <NavDrawerBody>
-                <NavSectionHeader>General</NavSectionHeader>
-                <NavItem value="scan-screen">Scans</NavItem>
-                <NavItem value="add-api">Add API</NavItem>
-                <div className={ compiledStyles.comingSoonContainer }>
-                    <Badge appearance="outline" color="informative">Coming soon</Badge>
-                </div>
+            <NavDrawerBody className={ compiledStyles.headerPaddingFix }>
+                <Activity mode={ props.menuLayout.header ? 'visible' : 'hidden' }>
+                    <NavDrawerHeader>
+                        <Layout>
+                            <LayoutItem align="center">
+                                { props.menuLayout.header?.icon }
+                                <DrawerHeaderTitle className={ props.menuLayout.header?.icon && compiledStyles.headerIconPadding }>{ props.menuLayout.header?.title }</DrawerHeaderTitle>
+                            </LayoutItem>
+                        </Layout>
+                    </NavDrawerHeader>
+                </Activity>
+                { computedMenu.computedMenuList.map((item) => renderNavEntry(item)) }
             </NavDrawerBody>
         </NavDrawer>
     );

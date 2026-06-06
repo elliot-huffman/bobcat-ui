@@ -27,7 +27,7 @@ export function OutputStepCard(props: OutputStepCardProps): React.ReactNode {
             <p className={ mergeClasses(styles.description, props.slots?.description?.className) }>
                 Review the current wizard input values without sending request or response data.
             </p>
-            <div className={ mergeClasses(styles.outputCodeContainer, props.slots?.outputCodeContainer?.className) }>
+            <Layout className={ mergeClasses(styles.outputCodeContainer, props.slots?.outputCodeContainer?.className) }>
                 <pre className={ mergeClasses(styles.outputCodeBlock, props.slots?.outputCodeBlock?.className) }>{ props.state.outputText || 'No output captured yet.' }</pre>
                 <Button
                     appearance="subtle"
@@ -38,7 +38,7 @@ export function OutputStepCard(props: OutputStepCardProps): React.ReactNode {
                     title={ props.state.copied ? 'Copied' : 'Copy output' }
                     onClick={ () => { void props.onCopy(); } }
                 />
-            </div>
+            </Layout>
             <Layout className={ mergeClasses(styles.actions, props.slots?.actions?.className) }>
                 <Button appearance="secondary" onClick={ props.onBack }>Back</Button>
             </Layout>

@@ -19,6 +19,9 @@ export interface InputStepCardSlots {
     actions?: SlotClassName;
     description?: SlotClassName;
     eyebrow?: SlotClassName;
+    fileInput?: SlotClassName;
+    fileInputLabel?: SlotClassName;
+    fileUploadStatus?: SlotClassName;
     firstInput?: SlotClassName;
     firstLabel?: SlotClassName;
     inputStack?: SlotClassName;

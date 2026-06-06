@@ -1,10 +1,12 @@
 'use client';
 
 import { Layout, LayoutItem } from './_components/elements/LayoutSystem';
-import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { NavigationMenu } from './_components/elements/NavigationMenu';
 import { TopBar } from './_components/elements/TopBar';
 import { useStyleList } from './_components/styles/globalTemplate';
+import type { MenuItem, NavigationMenuUnifiedConfiguration } from './_components/types/elements/NavigationMenu';
+import { Alert20Regular, CompassNorthwest20Regular, DocumentFolder20Regular, Info20Regular, ScanObject20Regular } from '@fluentui/react-icons';
 
 /** Structure of the template component's props. */
 interface TemplateProps {
@@ -45,6 +47,9 @@ export default function Template(props: TemplateProps): React.ReactNode {
     // Manually inject the max height of the content container to ensure perfect scrolling behavior
     useLayoutEffect(() => { calculateContentMaxHeight(); }, [calculateContentMaxHeight]);
 
+        // Local state that controls the state of the navigation menu's visibility
+    const [isMenuOpen, setMenuOpen] = useState(true);
+
     // Automatically recalculate the content container's max height whenever the window is resized to maintain proper layout and scrolling behavior.
     useEffect(() => {
         // Recalculate the content container's max height whenever the window is resized.
@@ -54,12 +59,61 @@ export default function Template(props: TemplateProps): React.ReactNode {
         return (): void => { window.removeEventListener('resize', calculateContentMaxHeight); };
     }, [calculateContentMaxHeight]);
 
+     /** Configuration for the navigation menu. */
+    const navigationMenuConfig: NavigationMenuUnifiedConfiguration = {
+        'header': { 'title': 'Navigation Menu' },
+        'items': [
+            {
+                'label': 'General',
+                'type': 'divider'
+            },
+            {
+                'destination': '/',
+                'icon': <DocumentFolder20Regular />,
+                'label': 'Specs',
+                'type': 'item'
+            } as MenuItem,
+            {
+                'destination': '/alerts',
+                'icon': <Alert20Regular />,
+                'label': 'Alerts',
+                'type': 'item'
+            } as MenuItem,
+            {
+                'destination': '/scans',
+                'icon': <ScanObject20Regular />,
+                'label': 'Scans',
+                'type': 'item'
+            } as MenuItem,
+            {
+                'destination': '/threat-intel',
+                'icon': <CompassNorthwest20Regular />,
+                'label': 'Threat Intel',
+                'type': 'item'
+            } as MenuItem,
+           
+            {
+                'label': 'System',
+                'type': 'divider'
+            },
+            {
+                'destination': '/About',
+                'icon': <Info20Regular />,
+                'label': 'About',
+                'type': 'item'
+            } as MenuItem
+        ]
+    };
+
     // Rendered page wrapper
     return (
         <Layout className={ compiledStyles.rootContainer }>
-            <TopBar ref={ topBarRef } />
+            <TopBar ref={ topBarRef } navMenuToggle={ {
+                isMenuOpen,
+                setMenuOpen
+            } } />
             <Layout direction="column" noWrap ref={ contentContainerRef }>
-                <NavigationMenu />
+                <NavigationMenu open={ isMenuOpen } setMenuOpenState={ setMenuOpen } menuLayout={ navigationMenuConfig } />
                 <LayoutItem className={ compiledStyles.pageContent } >
                     { props.children }
                 </LayoutItem>
