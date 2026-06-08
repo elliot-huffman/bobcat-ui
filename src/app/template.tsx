@@ -6,7 +6,7 @@ import { NavigationMenu } from './_components/elements/NavigationMenu';
 import { TopBar } from './_components/elements/TopBar';
 import { useStyleList } from './_components/styles/globalTemplate';
 import type { MenuItem, NavigationMenuUnifiedConfiguration } from './_components/types/elements/NavigationMenu';
-import { Alert20Regular, CompassNorthwest20Regular, DocumentFolder20Regular, Info20Regular, ScanObject20Regular } from '@fluentui/react-icons';
+import { Alert20Regular, Apps20Regular, CompassNorthwest20Regular, DocumentFolder20Regular, Home20Regular, Info20Regular, ScanObject20Regular } from '@fluentui/react-icons';
 
 /** Structure of the template component's props. */
 interface TemplateProps {
@@ -92,6 +92,35 @@ export default function Template(props: TemplateProps): React.ReactNode {
                 'type': 'item'
             } as MenuItem,
            
+            {
+                'label': 'Prototype 2',
+                'type': 'divider'
+            },
+            {
+                'destination': '/prototype2/overview',
+                'icon': <Home20Regular />,
+                'label': 'Overview',
+                'type': 'item'
+            } as MenuItem,
+            {
+                'destination': '/prototype2/repos',
+                'icon': <Apps20Regular />,
+                'label': 'Repositories',
+                'type': 'item'
+            } as MenuItem,
+            {
+                'destination': '/prototype2/alerts',
+                'icon': <Alert20Regular />,
+                'label': 'Alerts',
+                'type': 'item'
+            } as MenuItem,
+            {
+                'destination': '/prototype2/scans',
+                'icon': <ScanObject20Regular />,
+                'label': 'Scans',
+                'type': 'item'
+            } as MenuItem,
+
             {
                 'label': 'System',
                 'type': 'divider'
