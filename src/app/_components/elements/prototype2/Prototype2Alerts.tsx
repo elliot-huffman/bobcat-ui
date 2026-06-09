@@ -75,14 +75,11 @@ export function Prototype2Alerts(props: Prototype2AlertsProps): ReactNode {
 
     return (
         <Layout className={ styles.root }>
-            <Layout className={ styles.pageHead }>
                 <Layout className={ styles.pageHeadText }>
                     <h2 className={ styles.pageTitle }>Alerts</h2>
                     <p className={ styles.pageSubtitle }>Every flagged endpoint across { scannedRepoCount } scanned repositories.</p>
                 </Layout>
-            </Layout>
 
-            <Layout className={ styles.toolbar }>
                 <SearchBox
                     className={ styles.search }
                     contentBefore={ <AlertRegular /> }
@@ -90,9 +87,7 @@ export function Prototype2Alerts(props: Prototype2AlertsProps): ReactNode {
                     value={ search }
                     onChange={ (_event, data) => { setSearch(data.value); } }
                 />
-            </Layout>
 
-            <Layout className={ styles.findList }>
                 {visibleAlerts.length === 0 ? (
                     <p className={ styles.emptyState }>No alerts matched your search.</p>
                 ) : visibleAlerts.map((alert, index) => (
@@ -114,7 +109,6 @@ export function Prototype2Alerts(props: Prototype2AlertsProps): ReactNode {
                         <ChevronRightRegular className={ styles.chevron } />
                     </button>
                 )) }
-            </Layout>
 
             <Prototype2FindingDrawer
                 open={ drawerOpen }
